@@ -168,7 +168,7 @@ extern void team_choose (_player *pl);
 // for the playerinput handling
 extern void playerinput_loop (int pl_nr);
 extern void playerinput_keyb_loop (int pl_nr);
-extern inline void playerinput_keyb_read (int pk_offset, int pl_nr);
+extern void playerinput_keyb_read (int pk_offset, int pl_nr);
 
 /* playermenu.c */
 extern void playernamemenu ();

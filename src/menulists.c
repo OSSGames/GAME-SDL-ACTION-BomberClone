@@ -32,7 +32,7 @@ _menuitem *menu_create_list (_menu *menu, char *name, int x, int y, int w, int h
 	menuitems->list = data;
 	menuitems->id = id;
     menuitems->changed=1;
-	strncpy (menuitems->label, name, MENU_TITLELEN);
+	snprintf (menuitems->label, MENU_TITLELEN, "%s", name);
 
 	return menuitems;
 };

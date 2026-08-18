@@ -50,7 +50,7 @@ _menuitem *menu_create_label (_menu *menu, char *name, int x, int y, int fontsiz
 	menuitems->pos.w = fontsize;
 	menuitems->pos.h = fontcolor;
 	menuitems->type = MENU_label;
-	strncpy (menuitems->label, name, MENU_TITLELEN);
+	snprintf (menuitems->label, MENU_TITLELEN, "%s", name);
 	
 	return menuitems;
 };

@@ -570,10 +570,11 @@ single_playergame (int second_player, int ai_players)
 	}
 	
 	done = 0;
-    for (bman.p_nr = -1, p = 0; (bman.p_nr == -1 && p < MAX_PLAYERS); p++)
+    for (bman.p_nr = -1, p = 0; (bman.p_nr == -1 && p < MAX_PLAYERS); p++) {
         if (!(PS_IS_used (players[p].state)))
             bman.p_nr = p;
-	players[bman.p_nr].team_nr = 0;
+    }
+    players[bman.p_nr].team_nr = 0;
 
     if (bman.p_nr >= MAX_PLAYERS) {
         printf ("ERROR in function (single_game_new): couldn't find any free player\n");
@@ -711,7 +712,6 @@ single_menu ()
     _charlist nrplayerlist[MAX_PLAYERS + 1];
     _charlist *selnrplayer = &nrplayerlist[bman.ai_players];
 	_menu *menu;
-	_menuitem *aiplayer = NULL;
 	SDL_Event event;
 
     /* fill in the nrplayerlist */
@@ -729,7 +729,7 @@ single_menu ()
 	menu = menu_new ("Single Game", 380,240);
 	
 	menu_create_text (menu, "numpl", 20, 50, 12, 2, COLOR_yellow, "Number of\nAI Players");
-	aiplayer = menu_create_list (menu, "AI Players", 40, 90, 50, 100, nrplayerlist, &selnrplayer, 3);
+	menu_create_list (menu, "AI Players", 40, 90, 50, 100, nrplayerlist, &selnrplayer, 3);
 	
 	menu_create_button (menu,"Change Playernames" ,160, 50, 210, 4);
 

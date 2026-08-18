@@ -97,7 +97,7 @@ int playermenu_selgfx (int pl_nr) {
 	_menu *menu;
 	int selgfx, eventstate;
     SDL_Event event;
-    Uint8 *keys;
+    const Uint8 *keys;
 	int done = 0;
 
 	if (pl_nr < 0 || pl_nr >= MAX_PLAYERS)
@@ -143,8 +143,8 @@ int playermenu_selgfx (int pl_nr) {
 				 * go to the next gfx or the preview one 
 				 */
                 if (event.key.keysym.sym == SDLK_TAB) {
-                    keys = SDL_GetKeyState (NULL);
-                    if (keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT]) {
+                    keys = SDL_GetKeyboardState (NULL);
+                    if (keys[SDL_GetScancodeFromKey(SDLK_LSHIFT)] || keys[SDL_GetScancodeFromKey(SDLK_RSHIFT)]) {
                         if ((--selgfx) < 0)
 							selgfx = gfx.player_gfx_count-1;
 					}
@@ -371,13 +371,13 @@ void playermenu () {
 void playermenu_getflags (char *text, _player *player) {
 	text[0] = 0;
 	if (player->net.flags & NETF_firewall)
-		sprintf (text, "%sNET_FW ", text);
+		strcat (text, "NET_FW ");
 	if (player->net.flags & NETF_local2)
-		sprintf (text, "%sNET_2P ", text);
+		strcat (text, "NET_2P ");
 	if (player->state & PSF_net)
-		sprintf (text, "%sPSF_NET ", text);
+		strcat (text, "PSF_NET ");
 	if (player->state & PSF_ai)
-		sprintf (text, "%sPSF_AI ", text);
+		strcat (text, "PSF_AI ");
 };
 
 

@@ -22,7 +22,7 @@ chat_findfreeline ()
     i = chat.curline;
 
     if (i >= CHAT_MAX_LINES-1) {
-        memcpy (&chat.lines[0], &chat.lines[1], sizeof (chat.lines[1]) * (CHAT_MAX_LINES - 1));
+        memmove (&chat.lines[0], &chat.lines[1], sizeof (chat.lines[1]) * (CHAT_MAX_LINES - 1));
         i = CHAT_MAX_LINES - 2;
     }
     else
@@ -75,10 +75,10 @@ chat_drawbox ()
     SDL_Rect src;
     int i;
 
-    if (gfx_locksurface (gfx.screen))
+    if (gfx_locksurface (gfx.screen)) {
         return;
-
-	src = chat.window;
+    }
+    src = chat.window;
 	SDL_BlitSurface (chat.oldscreen, NULL, gfx.screen, &src);
 	
     for (i = 0; i < 2; i++) {
@@ -235,7 +235,7 @@ chat_loop (SDL_Event * event)
         }
 
         if (i == 1 && chat.input.text[0] != 0) {
-            sprintf (text, "%s: %s", bman.playername, chat.input.text);
+            snprintf (text, sizeof (text), "%s: %s", bman.playername, chat.input.text);
             net_send_chat (text, 1);
             chat_addline (text, CHAT_TEXTCOLOR);
             keybinput_new (&chat.input, KEYBI_text, 255);

@@ -28,16 +28,16 @@ config_get_datapath ()
     char filename[255];
 
     sprintf (bman.datapath, PACKAGE_DATA_DIR);
-    sprintf (filename, "%s/gfx/logo.png", bman.datapath);
+    snprintf (filename, sizeof (filename), "%s/gfx/logo.png", bman.datapath);
     f = fopen (filename, "r");
 
     if (!f) {
         sprintf (bman.datapath, "data");
-        sprintf (filename, "%s/gfx/logo.png", bman.datapath);
+        snprintf (filename, sizeof (filename), "%s/gfx/logo.png", bman.datapath);
         f = fopen (filename, "r");
         if (!f) {
             sprintf (bman.datapath, "../data");
-            sprintf (filename, "%s/gfx/logo.png", bman.datapath);
+            snprintf (filename, sizeof (filename), "%s/gfx/logo.png", bman.datapath);
             f = fopen (filename, "r");
             if (!f) {
                 printf ("Can't find Datafiles.\n");
@@ -100,8 +100,8 @@ config_init (int argc, char **argv)
     bman.autostart = AUTOSTART;
     bman.askplayername = 0;
     debug = 0;
-    gfx.res.x = 640;
-    gfx.res.y = 480;
+    gfx.res.x = 1024;
+    gfx.res.y = 768;
     gfx.bpp = 16;
     gfx.players = NULL;
     bman.password[0] = 0;
@@ -151,11 +151,11 @@ config_init (int argc, char **argv)
     snd_init ();
     gfx_blitdraw ();
 
-    SDL_Flip (gfx.screen);
+    gfx_present ();
 
     sprintf (text, "Bomberclone %s", VERSION);
-    sprintf (icon, "%s/pixmaps/bomberclone.png", bman.datapath);
-    SDL_WM_SetCaption (text, NULL);
+    snprintf (icon, sizeof (icon), "%s/pixmaps/bomberclone.png", bman.datapath);
+    SDL_SetWindowTitle (gfx.window, text);
     icon_img = IMG_Load (icon);
     if (icon_img == NULL)
         d_printf ("could not load icon. (%s)\n", icon);
@@ -167,7 +167,7 @@ config_init (int argc, char **argv)
         SDL_FreeSurface (tmp);
     }
 #endif
-    SDL_WM_SetIcon (icon_img, NULL);
+    SDL_SetWindowIcon (gfx.window, icon_img);
 
     ReadPrgArgs_Jump (argc, argv);
 };
@@ -186,7 +186,9 @@ config_read ()
     int i;
     char filename[512];
 
-#ifdef _WIN32
+#ifdef __OS2__
+    sprintf (filename, "%sbomberclone.cfg", s_get_xdg_config_dir ());
+#elif defined(_WIN32)
     sprintf (filename, "%sbomberclone.cfg", s_gethomedir ());
 #else
     sprintf (filename, "%s.bomberclone.cfg", s_gethomedir ());
@@ -414,7 +416,7 @@ config_read ()
             }
             sprintf (txt, "teamname%d", i);
             if (!strcmp (keyword, txt)) {
-                strncpy (teams[i].name, value, LEN_PLAYERNAME);
+                snprintf (teams[i].name, LEN_PLAYERNAME, "%s", value);
             }
         }
 
@@ -484,7 +486,9 @@ config_write ()
     int i;
     char filename[512];
 
-#ifdef _WIN32
+#ifdef __OS2__
+    sprintf (filename, "%sbomberclone.cfg", s_get_xdg_config_dir ());
+#elif defined(_WIN32)
     sprintf (filename, "%sbomberclone.cfg", s_gethomedir ());
 #else
     sprintf (filename, "%s.bomberclone.cfg", s_gethomedir ());
@@ -657,7 +661,7 @@ config_video ()
         }
     };
     draw_logo ();
-    SDL_Flip (gfx.screen);
+    gfx_present ();
 };
 
 
@@ -760,7 +764,7 @@ ReadPrgArgs (int argc, char **argv)
 				s='-';
         	if (!strcmp (argv[i], "-port")) {
             	if (s!='-') 
-					strncpy (bman.port, argv[++i], LEN_PORT);
+					snprintf (bman.port, LEN_PORT, "%s", argv[++i]);
 					else {
 						printf("Error: Parameter required for -port\n");
 						exit(1);
@@ -768,7 +772,7 @@ ReadPrgArgs (int argc, char **argv)
 				}
         	if (!strcmp (argv[i], "-ogcport")) {
 				if (s!='-')
-					strncpy (bman.ogc_port, argv[++i], LEN_PORT);
+					snprintf (bman.ogc_port, LEN_PORT, "%s", argv[++i]);
 					else {
 						printf("Error: Parameter required for -ogcport\n");
 						exit(1);
@@ -776,7 +780,7 @@ ReadPrgArgs (int argc, char **argv)
 				}
         	if (!strcmp (argv[i], "-name")) {
 				if (s!='-')
-					strncpy (bman.playername, argv[++i], LEN_PLAYERNAME);
+					snprintf (bman.playername, LEN_PLAYERNAME, "%s", argv[++i]);
 					else {
 						printf("Error: Parameter required for -name\n");
 						exit(1);
@@ -784,7 +788,7 @@ ReadPrgArgs (int argc, char **argv)
 				}
     	    if (!strcmp (argv[i], "-name2")) {
 				if (s!='-')
-					strncpy (bman.player2name, argv[++i], LEN_PLAYERNAME);
+					snprintf (bman.player2name, LEN_PLAYERNAME, "%s", argv[++i]);
 					else {
 						printf("Error: Parameter required for -name2\n");
 						exit(1);
@@ -792,7 +796,7 @@ ReadPrgArgs (int argc, char **argv)
 				}
         	if (!strcmp (argv[i], "-gamename")) {
 				if (s!='-') 
-					strncpy (bman.gamename, argv[++i], LEN_GAMENAME);
+					snprintf (bman.gamename, LEN_GAMENAME, "%s", argv[++i]);
 					else {
 						printf("Error: Parameter required for -gamename\n");
 						exit(1);
@@ -845,7 +849,7 @@ ReadPrgArgs_Jump (int argc, char **argv)
             join_multiplayer_game ();
         }
         else if (!strcmp (argv[i], "-connect")) {
-            strncpy (bman.servername, argv[++i], LEN_SERVERNAME + LEN_PORT + 2);
+            snprintf (bman.servername, LEN_SERVERNAME + LEN_PORT + 2, "%s", argv[++i]);
             join_multiplayer_game ();
         }
     }

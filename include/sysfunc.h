@@ -31,11 +31,12 @@ extern void s_delay (int ms);
 extern int s_fetchevent (SDL_Event *event);
 extern int s_random (int maxnr);
 extern char *s_gethomedir ();
+extern char *s_get_xdg_config_dir ();
 extern int s_countbits (int nbomb, int nr);
 extern char* getfilename(char* path);
 
-extern inline Sint16 s_swap16 (Sint16 i);
-extern inline Sint32 s_swap32 (Sint32 i);
+extern Sint16 s_swap16 (Sint16 i);
+extern Sint32 s_swap32 (Sint32 i);
 
 extern _direntry *s_getdir (char *path);
 extern _direntry *s_dirfilter (_direntry *dirstart, signed char dirflags);
@@ -50,7 +51,7 @@ extern _direntry *s_dirfilter (_direntry *dirstart, signed char dirflags);
 
 #ifndef HAVE_RINTF
        #ifndef HAVE_RINT
-               extern inline float rintf (float f);
+               extern float rintf (float f);
        #else
                #define rintf(__x) ((float)rint(double)__x)
        #endif
@@ -68,7 +69,7 @@ extern _direntry *s_dirfilter (_direntry *dirstart, signed char dirflags);
 	#define vsnprintf _vsnprintf
 #endif
 
-extern inline void s_calctimesync ();
+extern void s_calctimesync ();
 extern void rect_clipping (SDL_Rect *src, SDL_Rect *dest, SDL_Rect *window, SDL_Rect *csrc, SDL_Rect *cdest);
 extern void charlist_fillarraypointer (_charlist *list, int c);
 extern _charlist *charlist_findtext (_charlist *list, char *text);

@@ -24,7 +24,7 @@ menu_new (char *title, int x, int y)
     _menu *menu = malloc (sizeof (_menu));
     int i;
 
-    strncpy (menu->title, title, MENU_TITLELEN);
+    snprintf (menu->title, MENU_TITLELEN, "%s", title);
     menu->items = NULL;
     menu->focus = NULL;
     for (i = 0; i < MENU_MAXENTRYS; i++) {
@@ -219,10 +219,10 @@ menu_draw_menuitem (_menuitem * m)
 {
     _menu *menu;
 
-    if (m == NULL)
+    if (m == NULL) {
         return;
-
-	menu = (_menu *) m->menu;
+    }
+    menu = (_menu *) m->menu;
 	
     if (!menu->looprunning)
         return;
@@ -437,7 +437,7 @@ menu_focus_id (_menu * menu, int id)
 int
 menu_event_loop (_menu * menu, SDL_Event * event, int eventstate)
 {
-    Uint8 *keys;
+    const Uint8 *keys;
     int done = 0;
 	
     if (eventstate >= 1) {
@@ -454,8 +454,8 @@ menu_event_loop (_menu * menu, SDL_Event * event, int eventstate)
             break;
         case (SDL_KEYDOWN):    /* focus next element */
             if (menu->oldkey == 0 && event->key.keysym.sym == SDLK_TAB) {
-                keys = SDL_GetKeyState (NULL);
-                if (keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT])
+                keys = SDL_GetKeyboardState (NULL);
+                if (keys[SDL_GetScancodeFromKey(SDLK_LSHIFT)] || keys[SDL_GetScancodeFromKey(SDLK_RSHIFT)])
                     menu_focus_prev (menu);
                 else
                     menu_focus_next (menu);
@@ -591,11 +591,9 @@ menu_dir_select (char *title, char *path, signed char dirflags)
       menuselect;
     _charlist *selfile = flist;
     _menu *menu;
-	_menuitem *dirmi;
-
     flcnt = menu_create_dirlist (path, dirflags, flist, MAX_DIRENTRYS);
     menu = menu_new (title, 300, 300);
-    dirmi = menu_create_list (menu, "Dir", -1, 50, 200, 200, flist, &selfile, 1);
+    menu_create_list (menu, "Dir", -1, 50, 200, 200, flist, &selfile, 1);
     menu_create_button (menu, "OK", -1, 270, 150, 0);
 	menu_focus_id (menu, 1);
 	

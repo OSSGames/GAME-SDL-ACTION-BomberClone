@@ -180,13 +180,13 @@ draw_stone (int x, int y)
     }
 
     // draw explosions if there is any
-    for (d = 0; d < 4; d++)
+    for (d = 0; d < 4; d++) {
         if (stone->ex[d].count > 0) {
             stone_drawfire (x, y, -1);
-			break;
+            break;
         }
-
-	if (debug) {
+    }
+    if (debug) {
 		char txt[64];
 		/* ex numbers..
 		sprintf (txt, "%d,%d%d", map.field[x][y].ex[0].count, map.field[x][y].ex[0].bomb_p, map.field[x][y].ex[0].bomb_b); font_gfxdraw (dest.x, dest.y, txt, 0, COLOR_white, (y*256) + 10);
@@ -504,10 +504,10 @@ field_hurrysize ()
 
 			/* check if a bomb is at this position, if so let the bomb explode
 			   and wait untill the explosion is over */
-		    for (i = 0, d = 0; d < 4; d++)
+		    for (i = 0, d = 0; d < 4; d++) {
         		if (map.field[fieldhurrypos.x][fieldhurrypos.y].ex[d].count > 0)
-            		i++;	
-
+            		i++;
+		    }
 			get_bomb_on (fieldhurrypos.x, fieldhurrypos.y, bombs);
 			if (i)
 				fieldhurrypos = old;

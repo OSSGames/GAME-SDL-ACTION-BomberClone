@@ -46,11 +46,11 @@ inline void gfx_blitupdaterectclear () {
 };
 
 
-/* SDL Update of the rects */
+/* Present the virtual screen to the window with scaling if needed */
 void gfx_blitupdaterectdraw () {
 	if (blitrects_nr > 0)
-		SDL_UpdateRects (gfx.screen, blitrects_nr, blitrects);
-	
+		gfx_present ();
+
 	blitrects_nr = 0;
 	gfx_blitupdaterectclear ();
 };

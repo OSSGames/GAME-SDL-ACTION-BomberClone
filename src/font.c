@@ -73,14 +73,14 @@ void font_load () {
 	
     /* load the font */
 	for (i = 0; i < 3; i++) {
-		sprintf (filename, "%s/gfx/font%d.png", bman.datapath, i);
+		snprintf (filename, sizeof (filename), "%s/gfx/font%d.png", bman.datapath, i);
 		tmp = IMG_Load (filename);
 		if (tmp  == NULL) {
 			printf ("Could not load font.\n");
 			exit (1);
 		}
 		
-		SDL_SetColorKey (tmp , SDL_SRCCOLORKEY, SDL_MapRGB (tmp->format, 255, 255, 255));
+		SDL_SetColorKey (tmp , SDL_TRUE, SDL_MapRGB (tmp->format, 255, 255, 255));
 		raw = SDL_DisplayFormat (tmp);
 		
 		for (c = 0; c < COLOR_max; c++) {
@@ -128,7 +128,7 @@ void font_load () {
 			}
 			
 			font[i].image[c] = SDL_DisplayFormat (tmp);
-			SDL_SetColorKey (font[i].image[c] , SDL_SRCCOLORKEY, SDL_MapRGB (font[i].image[c]->format, 0,0,0));
+			SDL_SetColorKey (font[i].image[c] , SDL_TRUE, SDL_MapRGB (font[i].image[c]->format, 0,0,0));
 			SDL_FillRect (font[i].image[c], NULL, SDL_MapRGB (font[i].image[c]->format, r,g,b));
 			SDL_BlitSurface (raw, NULL, font[i].image[c], NULL);
 		}

@@ -66,7 +66,7 @@ _menuitem *menu_create_entry (_menu *menu, char *name, int x, int y, int w, void
 	m->len = len;
 	m->ptrdata = (char *) data;
 	m->id = id;
-	strncpy (m->label, name, MENU_TITLELEN);
+	snprintf (m->label, MENU_TITLELEN, "%s", name);
 	
 	if (typ == MENU_entrytext)
 		keybinput_new (&m->keybi, KEYBI_text, len);

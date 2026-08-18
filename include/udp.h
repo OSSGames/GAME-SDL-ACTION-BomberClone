@@ -29,6 +29,19 @@
 	#ifndef MSG_DONTWAIT
 	#define MSG_DONTWAIT 0
 	#endif
+#elif defined(__OS2__)
+	/* OS/2 has no IPv6 — fall back to IPv4 throughout */
+	#define _sockaddr sockaddr_in
+	#ifndef MSG_DONTWAIT
+	#define MSG_DONTWAIT 0
+	#endif
+	#ifndef PF_INET6
+	#define PF_INET6 PF_INET
+	#endif
+	#ifndef AF_INET6
+	#define AF_INET6 AF_INET
+	#endif
+	#define sockaddr_in6 sockaddr_in
 #else
 	#define _sockaddr sockaddr_in6
 #endif

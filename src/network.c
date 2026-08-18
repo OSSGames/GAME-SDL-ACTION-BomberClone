@@ -28,7 +28,7 @@ network_server_port (char *server, char *host, int hostlen, char *port, int port
         }
 
     if (pos != NULL) {
-        // : für Portangabe gefunden
+        // : fï¿½r Portangabe gefunden
         if (pos - server < hostlen) {
             strncpy (host, server, pos - server);
             host[pos - server] = 0;
@@ -460,14 +460,13 @@ void
 net_transmit_gamedata ()
 {
     int done = 0,
-        keypressed = 0,
         x,
         y,                      // network upload status for one step
         p,
         i,
         net_istep;              // network init step
     SDL_Event event;
-    Uint8 *keys;
+    const Uint8 *keys;
     Uint32 downtimestamp = 0;
 
     draw_logo ();
@@ -497,7 +496,7 @@ net_transmit_gamedata ()
         net_istep = 3;
 
     draw_netupdatestate (1);
-    SDL_Flip (gfx.screen);
+    gfx_present ();
 
     downtimestamp = timestamp;
     while (!done && (bman.state == GS_update || (GT_MP_PTPS && net_istep != 0))) {
@@ -616,17 +615,14 @@ net_transmit_gamedata ()
                 done = 1;
             }
 
-        keys = SDL_GetKeyState (NULL);
+        keys = SDL_GetKeyboardState (NULL);
 
-        if (keys[SDLK_ESCAPE] && event.type == SDL_KEYDOWN) {
+        if (keys[SDL_GetScancodeFromKey(SDLK_ESCAPE)] && event.type == SDL_KEYDOWN) {
             done = 1;
             bman.p_nr = -1;
-            keypressed = 1;
             bman.state = GS_startup;
         }
 
-        if (event.type == SDL_KEYUP)
-            keypressed = 0;
     }
 
     timestamp = SDL_GetTicks (); // needed for time sync.

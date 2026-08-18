@@ -164,10 +164,10 @@ void host_multiplayer_game () {
     bman.p_nr = bman.p_servnr = 0;
 	team_choose (&players[0]);
     players[0].state = PSF_used;
-    if (bman.notifygamemaster)
+    if (bman.notifygamemaster) {
         send_ogc_update ();   /* send the information that we started an server */
-	
-	multiplayer_game ();
+    }
+    multiplayer_game ();
 
     if (bman.notifygamemaster)
         send_ogc_update ();   /* send the information that we started an server */

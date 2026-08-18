@@ -27,7 +27,7 @@ int keybinput_loop (_keybinput *ki, SDL_Event *event) {
 	
 	if (event->type == SDL_KEYDOWN && keybinput_oldkey != event->key.keysym.sym) {
 		key = keybinput_oldkey = event->key.keysym.sym;
-		keyu = event->key.keysym.unicode;
+		keyu = event->key.keysym.sym;
 	
 		if (key == 8) { // BACKSPACE
 			if (ki->curpos > 0) {
@@ -39,7 +39,7 @@ int keybinput_loop (_keybinput *ki, SDL_Event *event) {
 		else if (ki->type == KEYBI_text && ((keyu >= 32 && keyu <= 126) || (keyu >= 128 && keyu <= 255))) {
 			/* text keys will be read */
 			if (ki->curpos < ki->maxlen) {
-				ki->text[ki->curpos++] = event->key.keysym.unicode;
+				ki->text[ki->curpos++] = event->key.keysym.sym;
 				ki->text[ki->curpos] = 0;
 				ki->changed = 1;
 			}
@@ -47,7 +47,7 @@ int keybinput_loop (_keybinput *ki, SDL_Event *event) {
 		else if (ki->type == KEYBI_int && (keyu == '-' || (keyu >= '0' && keyu <= '9'))) {
 			/* only integers will be read */
 			if (ki->curpos < 255) {
-				ki->text[ki->curpos] = event->key.keysym.unicode;
+				ki->text[ki->curpos] = event->key.keysym.sym;
 				if (atoi(ki->text) <= ki->maxlen)
 					ki->curpos++;
 				ki->text[ki->curpos] = 0;
@@ -57,7 +57,7 @@ int keybinput_loop (_keybinput *ki, SDL_Event *event) {
 		else if (ki->type == KEYBI_float && (keyu == '-' || keyu == '.' || (keyu >= '0' && keyu <= '9'))) {
 			/* only floats will be read */
 			if (ki->curpos < 255) {
-				ki->text[ki->curpos++] = event->key.keysym.unicode;
+				ki->text[ki->curpos++] = event->key.keysym.sym;
 				ki->text[ki->curpos] = 0;
 				ki->changed = 1;
 			}

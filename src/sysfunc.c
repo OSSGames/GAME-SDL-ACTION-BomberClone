@@ -30,9 +30,24 @@ s_delay (int ms)
 int
 s_fetchevent (SDL_Event *event)
 {
-	if (SDL_PollEvent (event))
+	if (SDL_PollEvent (event)) {
+		if (event->type == SDL_KEYDOWN) {
+			SDL_Keymod mod = SDL_GetModState ();
+			if (event->key.keysym.sym == SDLK_x && (mod & KMOD_CTRL)) {
+				bman.state = GS_quit;
+				return 0;
+			}
+			if (event->key.keysym.sym == SDLK_RETURN && (mod & KMOD_ALT)) {
+				gfx.fullscreen = !gfx.fullscreen;
+				SDL_SetWindowFullscreen (gfx.window,
+					gfx.fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+				gfx_present ();
+				return 0;
+			}
+		}
 		return 1;
-  	s_delay (20);
+	}
+	s_delay (20);
 	return 0;
 }
 
@@ -65,6 +80,32 @@ inline float rintf (float f) {
 
 
 static char homedir[255];
+static char xdg_config_dir[512];
+
+char *
+s_get_xdg_config_dir ()
+{
+	char *p;
+
+	if ((p = getenv ("XDG_CONFIG_HOME")) != NULL)
+		snprintf (xdg_config_dir, sizeof (xdg_config_dir) - 1, "%s/bomberclone/", p);
+	else if ((p = getenv ("HOME")) != NULL)
+		snprintf (xdg_config_dir, sizeof (xdg_config_dir) - 1, "%s/.config/bomberclone/", p);
+	else
+		xdg_config_dir[0] = 0;
+
+	if (xdg_config_dir[0]) {
+		char tmp[512];
+		snprintf (tmp, sizeof (tmp), "%s", xdg_config_dir);
+		tmp[strlen (tmp) - 1] = 0; /* strip trailing slash */
+#ifdef _WIN32
+		mkdir (tmp);
+#else
+		mkdir (tmp, 0755);
+#endif
+	}
+	return xdg_config_dir;
+}
 
 char *
 s_gethomedir ()
@@ -140,9 +181,7 @@ s_getdir (char *path)
     if (dp != NULL) {
         while ((ep = readdir (dp)) != NULL && entrynr < MAX_DIRENTRYS) {
             direntrys[entrynr].next = NULL;
-            strncpy (direntrys[entrynr].name, ep->d_name, LEN_FILENAME - 1);
-            if (strlen (ep->d_name) >= LEN_FILENAME)
-                direntrys[entrynr].name[LEN_FILENAME - 1] = 0;
+            snprintf (direntrys[entrynr].name, LEN_FILENAME, "%s", ep->d_name);
 
             sprintf (filename, "%s/%s", path, direntrys[entrynr].name);
             stat (filename, &fstat);

@@ -36,14 +36,12 @@ main (int argc, char **argv)
 	teams = malloc (sizeof (_team) * MAX_TEAMS);
 	gfxengine_init ();
 	
-    if (SDL_Init (SDL_INIT_VIDEO| SDL_INIT_NOPARACHUTE) != 0) {
+    if (SDL_Init (SDL_INIT_VIDEO) != 0) {
         d_printf ("Unable to init SDL: %s\n", SDL_GetError ());
         return (1);
     }
 
     SDL_InitSubSystem ( SDL_INIT_JOYSTICK );
-	SDL_EnableUNICODE(1);
-	
 	config_init (argc, argv);
 	keyb_init ();
 

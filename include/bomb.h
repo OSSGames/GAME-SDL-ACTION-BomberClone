@@ -49,7 +49,7 @@ struct {
 // for the bomb..
 extern void bomb_loop ();
 extern void bomb_explode (_bomb * bomb, int net);
-extern inline void bomb_action (_bomb * bomb);
+extern void bomb_action (_bomb * bomb);
 extern void bomb_move (_bomb * bomb);
 extern void bomb_kicked (_bomb * bomb);
 extern void get_bomb_on (float x, float y, _point bombs[]);

@@ -22,7 +22,7 @@ _menuitem *menu_create_button (_menu *menu, char *name, int x, int y, int w, int
 	m->pos.y = y;
 	m->state = 0;
 	m->id = id;
-	strncpy (m->label, name, MENU_TITLELEN);
+	snprintf (m->label, MENU_TITLELEN, "%s", name);
 
 	return m;
 };

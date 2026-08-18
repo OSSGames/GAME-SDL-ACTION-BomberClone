@@ -1,0 +1,72 @@
+# BomberClone OS/2 Makefile (SDL2, GCC/EMX)
+
+CC      = gcc
+CFLAGS  = -O2 -Wall -Wno-format-truncation \
+          -I./include \
+          -I/@unixroot/usr/include/SDL2 \
+          -DPACKAGE_DATA_DIR=\"./data\" \
+          -DVERSION=\"0.11.9.1\" \
+          -DHAVE_SDL_MIXER=1 \
+          -D__OS2__
+LDFLAGS = -Zomf -Zhigh-mem -Zmap
+LIBS    = -lSDL2 -lSDL2_image -lSDL2_mixer -lsocket
+
+DEFFILE = src/bomberclone.def
+
+SRCS = \
+  src/bomb.c \
+  src/broadcast.c \
+  src/chat.c \
+  src/configuration.c \
+  src/debug.c \
+  src/field.c \
+  src/flyingitems.c \
+  src/font.c \
+  src/game.c \
+  src/gfx.c \
+  src/gfxengine.c \
+  src/gfxpixelimage.c \
+  src/help.c \
+  src/keyb.c \
+  src/keybinput.c \
+  src/main.c \
+  src/map.c \
+  src/mapmenu.c \
+  src/menu.c \
+  src/menubools.c \
+  src/menubuttons.c \
+  src/menuentrys.c \
+  src/menuimages.c \
+  src/menulabels.c \
+  src/menulists.c \
+  src/multiwait.c \
+  src/netmenu.c \
+  src/netsrvlist.c \
+  src/network.c \
+  src/ogcache-client.c \
+  src/packets.c \
+  src/pkgcache.c \
+  src/player.c \
+  src/playerinput.c \
+  src/playermenu.c \
+  src/single.c \
+  src/sound.c \
+  src/special.c \
+  src/sysfunc.c \
+  src/tileset.c \
+  src/udp.c
+
+OBJS = $(SRCS:.c=.o)
+
+TARGET = bomberclone.exe
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(DEFFILE) $(LIBS)
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(OBJS) $(TARGET) *.map

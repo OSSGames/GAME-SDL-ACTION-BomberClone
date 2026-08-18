@@ -40,20 +40,20 @@ void d_playerstat (char *head) {
 
 	d_printf ("---------------> %s nb play: %d\n", head, bman.playnum);
 
-	sprintf (text, "id Name             killed Unknown");
+	snprintf (text, sizeof (text), "id Name             killed Unknown");
 	for (i = 0; i < MAX_PLAYERS; i++)
 		if (players[i].gamestats.isaplayer == 1)
-			sprintf(text, "%s %02d", text, i);
-	sprintf(text, "%s\n", text);
+			snprintf(text + strlen(text), sizeof(text) - strlen(text), " %02d", i);
+	snprintf(text + strlen(text), sizeof(text) - strlen(text), "\n");
 	d_printf (text);
 
 	for (i = 0; i < MAX_PLAYERS; i++){
 		if (players[i].gamestats.isaplayer == 1 ) {
-			sprintf(text, "%02d %-16s   %2d       %d  ", i, players[i].name, players[i].gamestats.killed, players[i].gamestats.unknown);
+			snprintf(text, sizeof(text), "%02d %-16s   %2d       %d  ", i, players[i].name, players[i].gamestats.killed, players[i].gamestats.unknown);
 			for (j = 0; j < MAX_PLAYERS; j++)
 				if (players[j].gamestats.isaplayer == 1 )
-					sprintf(text, "%s %2d", text, players[i].gamestats.killedBy[j]);
-			sprintf(text, "%s\n", text);
+					snprintf(text + strlen(text), sizeof(text) - strlen(text), " %2d", players[i].gamestats.killedBy[j]);
+			snprintf(text + strlen(text), sizeof(text) - strlen(text), "\n");
 			d_printf (text);
 		}
 	}

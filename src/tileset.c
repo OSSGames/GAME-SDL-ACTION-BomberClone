@@ -35,7 +35,7 @@ tileset_random ()
     int max,
       sel;
 
-    sprintf (path, "%s/tileset", bman.datapath);
+    snprintf (path, sizeof (path), "%s/tileset", bman.datapath);
     desel = destart = s_getdir (path);
 
     for (max = 0, de = destart; de != NULL; de = de->next)
@@ -72,10 +72,8 @@ tileset_load (char *tilesetname, int dx, int dy)
     char tileset[LEN_TILESETNAME];
     SDL_Surface *tmpimage,
      *tmpimage1;
-    float sfkt;
-
     d_printf ("Loading Tileset: %s\n", tilesetname);
-    strncpy (tileset, tilesetname, LEN_TILESETNAME);
+    snprintf (tileset, LEN_TILESETNAME, "%s", tilesetname);
 
     /* set the block size to dx and dy, if one of both is -1
      * Calculate the Best Size of the Images */
@@ -101,18 +99,16 @@ tileset_load (char *tilesetname, int dx, int dy)
 
     /* create Table of points */
     scale (gfx.postab, gfx.block.x, 256);
-    sfkt = ((float) gfx.block.x) / ((float) GFX_IMGSIZE);
-
     /* calculating the best offset for the field on the screen */
     gfx.offset.x = (gfx.res.x - (gfx.block.x * map.size.x)) / 2;
     gfx.offset.y = gfx.res.y - (gfx.block.y * map.size.y);
 
     /* load the fire */
-    sprintf (fullname, "%s/tileset/%s/fire.png", bman.datapath, tileset);
+    snprintf (fullname, sizeof (fullname), "%s/tileset/%s/fire.png", bman.datapath, tileset);
     tmpimage = IMG_Load (fullname);
     if (tmpimage == NULL) {
         /* file could not be load, so load teh default tileset */
-        sprintf (fullname, "%s/tileset/default/fire.png", bman.datapath);
+        snprintf (fullname, sizeof (fullname), "%s/tileset/default/fire.png", bman.datapath);
         tmpimage = IMG_Load (fullname);
         if (tmpimage == NULL) {
             printf ("default tileset could not be loaded. [%s]\n", fullname);
@@ -124,17 +120,17 @@ tileset_load (char *tilesetname, int dx, int dy)
         scale_image (tmpimage, (tmpimage->w / GFX_IMGSIZE) * gfx.block.x,
                      gfx.fire.frames * gfx.block.y);
     getRGBpixel (tmpimage1, 0, 0, &r, &g, &b);
-    SDL_SetColorKey (tmpimage1, SDL_SRCCOLORKEY, SDL_MapRGB (tmpimage1->format, r, g, b));
+    SDL_SetColorKey (tmpimage1, SDL_TRUE, SDL_MapRGB (tmpimage1->format, r, g, b));
     gfx.fire.image = SDL_DisplayFormat (tmpimage1);
     SDL_FreeSurface (tmpimage);
     SDL_FreeSurface (tmpimage1);
 
     /* load the bomb */
-    sprintf (fullname, "%s/tileset/%s/bomb.png", bman.datapath, tileset);
+    snprintf (fullname, sizeof (fullname), "%s/tileset/%s/bomb.png", bman.datapath, tileset);
     tmpimage = IMG_Load (fullname);
     if (tmpimage == NULL) {
         /* file could not be load, so load teh default tileset */
-        sprintf (fullname, "%s/tileset/default/bomb.png", bman.datapath);
+        snprintf (fullname, sizeof (fullname), "%s/tileset/default/bomb.png", bman.datapath);
         tmpimage = IMG_Load (fullname);
         if (tmpimage == NULL) {
             printf ("default tileset could not be loaded. [%s]\n", fullname);
@@ -146,7 +142,7 @@ tileset_load (char *tilesetname, int dx, int dy)
         scale_image (tmpimage, (tmpimage->w / GFX_IMGSIZE) * gfx.block.x,
                      gfx.bomb.frames * gfx.block.y);
     getRGBpixel (tmpimage1, 0, 0, &r, &g, &b);
-    SDL_SetColorKey (tmpimage1, SDL_SRCCOLORKEY, SDL_MapRGB (tmpimage1->format, r, g, b));
+    SDL_SetColorKey (tmpimage1, SDL_TRUE, SDL_MapRGB (tmpimage1->format, r, g, b));
     gfx.bomb.image = SDL_DisplayFormat (tmpimage1);
     SDL_FreeSurface (tmpimage);
     SDL_FreeSurface (tmpimage1);
@@ -165,11 +161,11 @@ tileset_load (char *tilesetname, int dx, int dy)
             break;
         }
 
-        sprintf (fullname, "%s/tileset/%s/%s", bman.datapath, tileset, filename);
+        snprintf (fullname, sizeof (fullname), "%s/tileset/%s/%s", bman.datapath, tileset, filename);
         tmpimage = IMG_Load (fullname);
         if (tmpimage == NULL) {
             /* file could not be load, so load teh default tileset */
-            sprintf (fullname, "%s/tileset/default/%s", bman.datapath, filename);
+            snprintf (fullname, sizeof (fullname), "%s/tileset/default/%s", bman.datapath, filename);
             tmpimage = IMG_Load (fullname);
             if (tmpimage == NULL) {
                 printf ("default tileset could not be loaded. [%s]\n", fullname);
@@ -180,7 +176,7 @@ tileset_load (char *tilesetname, int dx, int dy)
         tmpimage1 =
             scale_image (tmpimage, (tmpimage->w / GFX_IMGSIZE) * gfx.block.x,
                          gfx.powerup[i].frames * gfx.block.y);
-        SDL_SetColorKey (tmpimage1, SDL_SRCCOLORKEY, SDL_MapRGB (tmpimage1->format, 255, 0, 255));
+        SDL_SetColorKey (tmpimage1, SDL_TRUE, SDL_MapRGB (tmpimage1->format, 255, 0, 255));
         gfx.powerup[i].image = SDL_DisplayFormat (tmpimage1);
         SDL_FreeSurface (tmpimage);
         SDL_FreeSurface (tmpimage1);
@@ -188,16 +184,16 @@ tileset_load (char *tilesetname, int dx, int dy)
     /* loading the field images */
     for (i = 0; i < FT_max; i++) {
         if (i != FT_mixed) {
-            sprintf (fullname, "%s/tileset/%s/%s.png", bman.datapath, tileset, ft_filenames[i]);
+            snprintf (fullname, sizeof (fullname), "%s/tileset/%s/%s.png", bman.datapath, tileset, ft_filenames[i]);
             gfx.field[i].w = GFX_IMGSIZE;
             gfx.field[i].h = GFX_IMGSIZE;
             tmpimage = IMG_Load (fullname);
             if (tmpimage == NULL) {
-                sprintf (fullname, "%s/tileset/%s/%s96.png", bman.datapath, tileset, ft_filenames[i]);
+                snprintf (fullname, sizeof (fullname), "%s/tileset/%s/%s96.png", bman.datapath, tileset, ft_filenames[i]);
                 gfx.field[i].h = GFX_IMGBIGSIZE;
                 tmpimage = IMG_Load (fullname);
                 if (tmpimage == NULL) {
-                    sprintf (fullname, "%s/tileset/default/%s.png", bman.datapath, ft_filenames[i]);
+                    snprintf (fullname, sizeof (fullname), "%s/tileset/default/%s.png", bman.datapath, ft_filenames[i]);
                     gfx.field[i].h = GFX_IMGSIZE;
                     tmpimage = IMG_Load (fullname);
                     if (tmpimage == NULL) {
@@ -218,7 +214,7 @@ tileset_load (char *tilesetname, int dx, int dy)
                 r = g = b = 255;
             else
                 getRGBpixel (tmpimage1, 0, 0, &r, &g, &b);
-            SDL_SetColorKey (tmpimage1, SDL_SRCCOLORKEY, SDL_MapRGB (tmpimage1->format, r, g, b));
+            SDL_SetColorKey (tmpimage1, SDL_TRUE, SDL_MapRGB (tmpimage1->format, r, g, b));
             gfx.field[i].image = SDL_DisplayFormat (tmpimage1);
             SDL_FreeSurface (tmpimage1);
             SDL_FreeSurface (tmpimage);

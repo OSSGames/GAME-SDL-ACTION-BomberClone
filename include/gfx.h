@@ -41,6 +41,7 @@ struct __gfxplayer {
 
 struct __gfx {
 	SDL_Surface *screen;
+	SDL_Window  *window;
 	_point res;		// resolution
 	_point block;	// block size
 	short int bpp;  // bits per pixel
@@ -71,6 +72,9 @@ struct __gfx {
 
 extern _gfx gfx;
 
+/* SDL2 compat: SDL_DisplayFormat converts to the window surface format */
+#define SDL_DisplayFormat(s) SDL_ConvertSurface((s), gfx.screen->format, 0)
+
 
 // gfx.c
 extern void gfx_loaddata ();
@@ -85,6 +89,7 @@ extern void redraw_logo_shaded (int x, int y, int w, int h, int c);
 extern void gfx_load_players (int sx, int sy);
 extern void gfx_free_players ();
 extern int gfx_get_nr_of_playergfx ();
+extern void gfx_present ();
 
 // gfxpixelimage.c
 extern void getRGBpixel (SDL_Surface *surface, int x, int y, int *R, int *G, int *B);
@@ -104,8 +109,8 @@ extern void gfxengine_init ();
 extern void gfx_blitdraw ();
 extern void gfx_blit (SDL_Surface *srci, SDL_Rect *srcr, SDL_Surface *desti, SDL_Rect *destr, int y);
 extern void gfx_blitsort ();
-extern inline void gfx_blitsortclear ();
-extern inline void gfx_blitupdaterectclear ();
+extern void gfx_blitsortclear ();
+extern void gfx_blitupdaterectclear ();
 extern void gfx_blitupdaterectdraw ();
 extern void gfx_blitupdaterectadd (SDL_Rect *rect);
 

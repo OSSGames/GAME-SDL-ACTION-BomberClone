@@ -218,7 +218,7 @@ void send_joingame (_net_addr * addr, char *name, int secondplayer) {
     p_jg.ver_major = vma;
     p_jg.ver_minor = vmi;
     p_jg.secondplayer = secondplayer;
-    strncpy (p_jg.name, name, LEN_PLAYERNAME);
+    snprintf (p_jg.name, LEN_PLAYERNAME, "%s", name);
     strncpy (p_jg.password, bman.password, LEN_PASSWORD);
 
     bman.firewall = 1;
@@ -436,19 +436,19 @@ send_playerid (_net_addr * addr, char *name, char *pladdr, char *plport,
     p_id.h.len = HTON16 (sizeof (struct pkg_playerid));
 
     if (name != NULL)
-        strncpy (p_id.name, name, LEN_PLAYERNAME);
+        snprintf (p_id.name, LEN_PLAYERNAME, "%s", name);
     else
         p_id.name[0] = 0;
 
     if (pladdr == NULL)
         p_id.host[0] = 0;
     else
-        strncpy (p_id.host, pladdr, LEN_SERVERNAME);
+        snprintf (p_id.host, LEN_SERVERNAME, "%s", pladdr);
 
     if (plport == NULL)
         p_id.port[0] = 0;
     else
-        strncpy (p_id.port, plport, LEN_PORT);
+        snprintf (p_id.port, LEN_PORT, "%s", plport);
 
     p_id.pl_nr = pl_nr;
     p_id.netflags = netflags;
@@ -1008,10 +1008,10 @@ void do_bombdata (struct pkg_bombdata *b_dat, _net_addr * addr) {
         return;
     }
 
-    if (b_dat->state == BS_off)
+    if (b_dat->state == BS_off) {
         return;                 // if there was a bomb let it explose don't delete the bomb
-
-	d_printf ("do_bombdata [%f,%f] Player: %d PlayerIgnition: %d Bomb: %d, ex_nr:%d\n",
+    }
+    d_printf ("do_bombdata [%f,%f] Player: %d PlayerIgnition: %d Bomb: %d, ex_nr:%d\n",
               I16TOF (NTOH16 (b_dat->x)), I16TOF (NTOH16 (b_dat->y)), b_dat->p_nr, b_dat->pi_nr, b_dat->b_nr, NTOH32 (b_dat->ex_nr));
 
     bomb = &players[b_dat->p_nr].bombs[b_dat->b_nr];
@@ -1167,10 +1167,10 @@ do_quit (struct pkg_quit *q_dat, _net_addr * addr)
     d_printf ("do_quit (%s:%s) pl_nr=%d new_server=%d\n", addr->host, addr->port, q_dat->pl_nr,
               q_dat->new_server);
 
-    if (addr->pl_nr == -1)
+    if (addr->pl_nr == -1) {
         return;
-	
-	if (q_dat->pl_nr == -1)
+    }
+    if (q_dat->pl_nr == -1)
 		q_dat->pl_nr = addr->pl_nr;
 
     bman.updatestatusbar = 1;
@@ -1446,7 +1446,7 @@ send_chat (_net_addr * addr, char *text)
 
     for (i = 0; i < sizeof (chat_pkg.text); i++)
         chat_pkg.text[i] = 0;
-    strncpy (chat_pkg.text, text, sizeof (struct pkg_chat) - sizeof (struct pkg));
+    snprintf (chat_pkg.text, sizeof (struct pkg_chat) - sizeof (struct pkg), "%s", text);
 
     send_pkg ((struct pkg *) &chat_pkg, addr);
 };
@@ -1594,15 +1594,15 @@ send_mapinfo (_net_addr * addr)
     map_pkg.sp_push = map.sp_push;
     map_pkg.start_bombs = bman.start_bombs;
     map_pkg.start_range = bman.start_range;
-    sprintf (map_pkg.start_speed, "%4f", bman.start_speed);
-    sprintf (map_pkg.bomb_tickingtime, "%4f", bman.bomb_tickingtime);
+    snprintf (map_pkg.start_speed, sizeof (map_pkg.start_speed), "%4f", bman.start_speed);
+    snprintf (map_pkg.bomb_tickingtime, sizeof (map_pkg.bomb_tickingtime), "%4f", bman.bomb_tickingtime);
 
     if (map.random_tileset)
         map_pkg.tileset[0] = 0;
     else
-        strncpy (map_pkg.tileset, map.tileset, LEN_TILESETNAME);
+        snprintf (map_pkg.tileset, LEN_TILESETNAME, "%s", map.tileset);
     map_pkg.map_selection = map.map_selection;
-    strncpy (map_pkg.mapname, map.map, LEN_FILENAME);
+    snprintf (map_pkg.mapname, LEN_FILENAME, "%s", map.map);
     d_printf ("send_mapinfo: Tileset: %s\n", map.tileset);
 #ifndef BUG_MAPINFO
 	test = addr;				// VERY DIRTY WORKAROUND WHY IS HERE A BUG

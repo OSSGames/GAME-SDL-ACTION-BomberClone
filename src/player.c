@@ -42,8 +42,9 @@ draw_player (_player * player)
         gfx_blit (player->gfx->ani.image, &src, gfx.screen, &dest, (player->pos.y * 256) + 128);
 
         /* if the player is ill, draw this image above him */
-        for (i = PI_max - 1; (i >= 0) && (player->ill[i].to <= 0.0f); i--);
-          if (i >= 0) {
+        for (i = PI_max - 1; (i >= 0) && (player->ill[i].to <= 0.0f); i--)
+            ;
+        if (i >= 0) {
 			  player->illframe += timefactor;
 	    	  while (player->illframe >= gfx.ill.frames)
 			     player->illframe -= gfx.ill.frames;
@@ -120,7 +121,6 @@ restore_players_screen ()
 {
     int i,
       x,
-      xs,
       xe,
       y,
       ys,
@@ -155,7 +155,6 @@ restore_players_screen ()
                 if (ye >= map.size.y)
                     ye = map.size.y - 1;
 				// redrawing of the stone
-                xs = x;
                 for (; x <= xe; x++)
                     for (y = ys; y <= ye; y++)
                         stonelist_add (x, y);
@@ -273,10 +272,10 @@ check_field (short int x, short int y)
 int check_exfield (short int x, short int y) {
     int res = 1, i;
 
-    if (map.field[x][y].type == FT_stone || map.field[x][y].type == FT_block)
+    if (map.field[x][y].type == FT_stone || map.field[x][y].type == FT_block) {
         res = 0;
-	
-	for (i = 0; (i < 4 && res == 1); i++)
+    }
+    for (i = 0; (i < 4 && res == 1); i++)
 		if (map.field[x][y].ex[i].count > 0)
 			res = 0;
 
@@ -445,7 +444,7 @@ get_killer_for_explosion (short int x, short int y)
 void
 player_move (int pl_nr)
 {
-    int oldd, coll_speed;
+    int oldd;
     _player *p = &players[pl_nr];
 
     if (p->tunnelto > 0.0f) {
@@ -460,7 +459,6 @@ player_move (int pl_nr)
             player_animation (p);
     		oldd = p->d;
             p->stepsleft = p->speed * timefactor;
-			coll_speed = p->collect_shoes;
             do {
                 p->d = oldd;
 			} while ((p->stepsleft = stepmove_player (pl_nr)) > 0);
@@ -677,9 +675,7 @@ void
 player_calcpos ()
 {
     _player *pl;
-    int oldm,
-      oldd,
-      p;
+    int p;
 	float oldspeed;
 
     for (p = 0; p < MAX_PLAYERS; p++) {
@@ -687,8 +683,6 @@ player_calcpos ()
         if (PS_IS_netplayer (pl->state) && PS_IS_alife (pl->state) && pl->m != 0) {
 		    player_animation (pl);
 			oldspeed = pl->speed;
-            oldm = pl->m;
-            oldd = pl->d;
             if (pl->speed > 0.0) {
 				pl->speed *= timefactor;
                 stepmove_player (p);
@@ -842,10 +836,10 @@ player_set_ilness (_player * p, int t, float new_to)
 void
 player_clear_ilness (_player * p, int type)
 {
-    if (type < 0 || type >= PI_max)
+    if (type < 0 || type >= PI_max) {
         return;
-	
-	d_printf ("player_clear_ilness Player: %s Type: %d\n", p->name, type);
+    }
+    d_printf ("player_clear_ilness Player: %s Type: %d\n", p->name, type);
 	
     switch (type) {
     case PI_slow:
@@ -1033,10 +1027,10 @@ player_delete (int pl_nr) {
 		net_game_send_delplayer (pl_nr);
 	}
 
-    if (GT_MP_PTPM && bman.notifygamemaster)
+    if (GT_MP_PTPM && bman.notifygamemaster) {
         send_ogc_update ();
-	
-	if (bman.p_nr == pl_nr)
+    }
+    if (bman.p_nr == pl_nr)
 		bman.p_nr = -1;
 	if (bman.p2_nr == pl_nr)
 		bman.p2_nr = -1;

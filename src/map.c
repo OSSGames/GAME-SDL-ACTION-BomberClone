@@ -214,7 +214,7 @@ map_genmorerandom ()
     if (map.size.x > MAX_FIELDSIZE_X)
         map.size.x = MAX_FIELDSIZE_X;
 
-    for (x = 0; x < map.size.x; x++)
+    for (x = 0; x < map.size.x; x++) {
         for (y = 0; y < map.size.y; y++) {
             if ((y == 0) || (y == map.size.y - 1))
                 map.field[x][y].type = FT_block;
@@ -239,8 +239,8 @@ map_genmorerandom ()
             map.field[x][y].frame = 0.0f;
             map.field[x][y].special = FT_nothing;
         }
-	
-	d_printf("genmorerandom: *** exit ***\n");
+    }
+    d_printf("genmorerandom: *** exit ***\n");
 	/* set the corners of the map to be valid start points */
 	
 	// map_ensure_corner_start_points();
@@ -278,7 +278,7 @@ map_random ()
     int max,
       sel;
 
-    sprintf (path, "%s/maps", bman.datapath);
+    snprintf (path, sizeof (path), "%s/maps", bman.datapath);
     desel = destart = s_getdir (path);
 
     for (max = 0, de = destart; de != NULL; de = de->next)
@@ -295,7 +295,7 @@ map_random ()
     d_printf ("Random Map %s (%d on %d)\n", desel->name, sel, max);
 
     if (desel != NULL)
-        sprintf (map.map, "%s/maps/%s", bman.datapath, desel->name);
+        snprintf (map.map, sizeof (map.map), "%s/maps/%s", bman.datapath, desel->name);
 }
 
 

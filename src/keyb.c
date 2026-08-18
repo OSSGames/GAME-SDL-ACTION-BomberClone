@@ -179,22 +179,17 @@ void keyb_config_createkeymenu (_menu *menu, int key, int x, int y, int menu_nr)
  */
 void keyb_config_joypad (int key) {
 	unsigned int n = 0;
-	SDL_Event event;
-	Uint8 *keys;
-	int keypressed = 0,	done = 0, eventstate = 0, reorder = 0, i, j;
+	SDL_Event event = {0};
+	int done = 0, eventstate = 0, reorder = 0, i, j;
 
 	if (joy[0] == NULL || key < 0 || key >= BCK_max) return;
-	
+
 	SDL_JoystickUpdate ();
-	
+
 	menu_displaytext ("Joypad Config", "Please press the new key\nfor this function.");
-	
-	keys = SDL_GetKeyState (NULL);
-	if (keys[SDLK_RETURN] || keys[SDLK_ESCAPE])
-		keypressed = 1;
-	
+
 	timestamp = SDL_GetTicks (); // needed for time sync.
-	
+
 	while (!reorder && !done && bman.state != GS_quit) {
 		/* do the network loop if we have to */
 		if (bman.sock > 0) {
@@ -204,7 +199,7 @@ void keyb_config_joypad (int key) {
 			else
 				reorder = 0;
 		}
-		
+
 		// eventstate = s_fetchevent (&event);
 		SDL_JoystickEventState ( SDL_QUERY ); // js
 		SDL_JoystickUpdate ();
@@ -243,24 +238,16 @@ void keyb_config_joypad (int key) {
  * select a new key for the function, 
  */
 void keyb_config_readkey (int key) {
-	int newkey;
+	int newkey = 0;
     SDL_Event event;
-    Uint8 *keys;
-    int keypressed = 0,
-        done = 0,
+    int done = 0,
         eventstate = 0,
         reorder = 0;
-		newkey = 0;
 
-	
-	if (key < 0 || key >= BCK_max) 
+	if (key < 0 || key >= BCK_max)
 		return;
-	
-	menu_displaytext ("Keyboard Config", "Please press the new key\nfor this function.");
 
-    keys = SDL_GetKeyState (NULL);
-    if (keys[SDLK_RETURN] || keys[SDLK_ESCAPE])
-        keypressed = 1;
+	menu_displaytext ("Keyboard Config", "Please press the new key\nfor this function.");
 
     timestamp = SDL_GetTicks (); // needed for time sync.
 
@@ -416,7 +403,7 @@ void keyb_init () {
 void keyb_loop (SDL_Event *event) {
 	int j, i, offset = 0;
 
-	Uint8 *keys = SDL_GetKeyState (NULL);
+	const Uint8 *keys = SDL_GetKeyboardState (NULL);
 
 	if (joy[0]) {
 		SDL_JoystickEventState ( SDL_QUERY ); // js
@@ -464,11 +451,13 @@ void keyb_loop (SDL_Event *event) {
 	
 	/* read the new state of the pressed keys */
 	for (i = 0; i < BCK_max; i++) {
+		SDL_Scancode sc = SDL_GetScancodeFromKey (keyb_gamekeys.keycode[i]);
 		if (keyb_gamekeys.keycode[i] >= 'A' && keyb_gamekeys.keycode[i] <= 'Z') {
-			if (keys[keyb_gamekeys.keycode[i]] || keys[tolower (keyb_gamekeys.keycode[i])])
+			SDL_Scancode sc2 = SDL_GetScancodeFromKey (tolower (keyb_gamekeys.keycode[i]));
+			if (keys[sc] || keys[sc2])
 				keyb_gamekeys.state[i] |= 1;
 		}
-		else if (keys[keyb_gamekeys.keycode[i]])
+		else if (keys[sc])
 			keyb_gamekeys.state[i] |= 1;
 	}
 };

@@ -57,7 +57,7 @@ _menuitem *menu_create_image (_menu *menu, char *name, int x, int y, int layer, 
 	} else
 		menuitems->rect = *rect;
 
-	strncpy (menuitems->label, name, MENU_TITLELEN);
+	snprintf (menuitems->label, MENU_TITLELEN, "%s", name);
 
 	return menuitems;
 };

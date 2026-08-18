@@ -48,16 +48,16 @@ static void fill_gameentry (char *pos, struct game_entry *ge) {
 			ge->serial = atoi (pos);
 			break;
 		case (1):	/* host */
-			strncpy (ge->host, pos, LEN_OGCHOST);
+			snprintf (ge->host, LEN_OGCHOST, "%s", pos);
 			break;
 		case (2):	/* port */
-			strncpy (ge->port, pos, LEN_OGCPORT);
+			snprintf (ge->port, LEN_OGCPORT, "%s", pos);
 			break;
 		case (3):	/* game */
-			strncpy (ge->game, pos, LEN_GAME);
+			snprintf (ge->game, LEN_GAME, "%s", pos);
 			break;
 		case (4):	/* version */
-			strncpy (ge->version, pos, LEN_VERSION);
+			snprintf (ge->version, LEN_VERSION, "%s", pos);
 			break;
 		case (5):	/* nettype */
 			if (strcmp (pos, "IPv6") == 0)
@@ -66,10 +66,10 @@ static void fill_gameentry (char *pos, struct game_entry *ge) {
 				ge->ai_family = PF_INET;
 			break;
 		case (6):	/* netname */
-			strncpy (ge->gamename, pos, LEN_GAMENAME);
+			snprintf (ge->gamename, LEN_GAMENAME, "%s", pos);
 			break;
 		case (7):	/* state */
-			strncpy (ge->status, pos, LEN_STATUS);
+			snprintf (ge->status, LEN_STATUS, "%s", pos);
 			break;
 		case (8):	/* curplayers */
 			ge->curplayers = atoi (pos);
@@ -198,12 +198,16 @@ int ogc_sendgamestatus (int sock, char *game, char *version, char *gamename,
 	char data[BUF_SIZE];
 	
 	if (sock <= 0 || ogc_sock <= 0) return 0;
-	sprintf (data, "GAME:%s\t%s\t%s", game, version, gamename);
+	snprintf (data, sizeof (data), "GAME:%s\t%s\t%s", game, version, gamename);
 	if (ogc_ai_family == PF_INET)
-		sprintf (data, "%s\tIPv4", data);
+		strncat (data, "\tIPv4", sizeof (data) - strlen (data) - 1);
 	else
-		sprintf (data, "%s\tIPv6", data);
-	sprintf (data, "%s\t%d\t%d\t%s", data, curplayers, maxplayers, status);
+		strncat (data, "\tIPv6", sizeof (data) - strlen (data) - 1);
+	{
+		char tmp[BUF_SIZE];
+		snprintf (tmp, sizeof (tmp), "\t%d\t%d\t%s", curplayers, maxplayers, status);
+		strncat (data, tmp, sizeof (data) - strlen (data) - 1);
+	}
 
 	udp_send (sock, data, strlen (data), &ogc_addr, ogc_ai_family);
 	

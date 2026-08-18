@@ -38,7 +38,7 @@ static void mw_init ()
 	gfx_blitdraw ();
 	bman.updatestatusbar = 1;
 	d_playerdetail ("mw_init:\n");
-	SDL_Flip (gfx.screen);
+	gfx_present ();
 	chat_show (10, gfx.res.y / 2, gfx.res.x - 20, gfx.res.y / 2 - 10);
 	chat_setactive (1, 1);
 };
@@ -50,7 +50,7 @@ static void mw_shutdown () {
 	gfx_blitdraw ();
 	draw_logo ();
 
-	SDL_Flip (gfx.screen);
+	gfx_present ();
 };
 
 
@@ -92,8 +92,9 @@ static void mw_keys_loop () {
 
 	if (keyb_gamekeys.state[BCK_fullscreen]  && !keyb_gamekeys.old[BCK_fullscreen]) {
         /* Switch Fullscreen */
-		SDL_WM_ToggleFullScreen(gfx.screen);
 		gfx.fullscreen = !gfx.fullscreen;
+		SDL_SetWindowFullscreen (gfx.window, gfx.fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+		gfx_present ();
         bman.updatestatusbar = 1; // force an update
 		bman.updatestatusbar = 1;
 	}

@@ -117,8 +117,8 @@ void broadcast_send (char *host, char *port) {
 	_net_addr addr;
 	
 	if (host != NULL && port != NULL) {
-		strncpy (addr.host, host, LEN_SERVERNAME);
-		strncpy (addr.port, port, LEN_PORT);
+		snprintf (addr.host, LEN_SERVERNAME, "%s", host);
+		snprintf (addr.port, LEN_PORT, "%s", port);
 		d_printf ("broadcast_send (%s:%s)\n", addr.host, addr.port);
 		dns_filladdr (addr.host, LEN_SERVERNAME, addr.port, LEN_PORT, bman.net_ai_family,  &addr.sAddr);
 		send_gameinfo (&addr, bman.sock, 0);

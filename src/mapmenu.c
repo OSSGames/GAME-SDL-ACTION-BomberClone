@@ -112,18 +112,18 @@ mapmenu ()
             menuselect = -1;
             break;
         case (2):              // Select Map
-            sprintf (pathname, "%s/maps", bman.datapath);
+            snprintf (pathname, sizeof (pathname), "%s/maps", bman.datapath);
             mapname = menu_dir_select ("Select Map", pathname, DF_file);
             if (mapname == NULL) {
                 map.map[0] = 0;
                 map.map_selection = 2;
             }
             else
-                sprintf (map.map, "%s/maps/%s", bman.datapath, mapname);
+                snprintf (map.map, sizeof (map.map), "%s/maps/%s", bman.datapath, mapname);
             break;
 
         case (5):              // Selected Tileset
-            sprintf (pathname, "%s/tileset", bman.datapath);
+            snprintf (pathname, sizeof (pathname), "%s/tileset", bman.datapath);
             mapname = menu_dir_select ("Select Tileset", pathname, DF_dir);
             if (mapname == NULL) {
                 map.tileset[0] = 0;
@@ -156,10 +156,10 @@ mapmenu ()
     map.size.y = map.size.y | 1;
     if (map.size.y < MIN_FIELDSIZE_Y)
         map.size.y = MIN_FIELDSIZE_Y;
-    if (map.size.y > MAX_FIELDSIZE_Y)
+    if (map.size.y > MAX_FIELDSIZE_Y) {
         map.size.y = MAX_FIELDSIZE_Y;
-
-	config_write ();
+    }
+    config_write ();
 	if (GT_MP_PTPM)  net_send_servermode ();
 }
 
@@ -174,15 +174,13 @@ mapinfo ()
 {
     _keybinput ki;
     SDL_Event event;
-    int x,
-      y,
+    int y,
       eventstate,
       done = 0;
     char text[255];
 
 // draw_menubox (WIN_X, WIN_Y);
 
-    x = gfx.res.x / 2;
     y = gfx.res.y / 2 - WIN_Y / 2;
 
     sprintf (text, "Map Settings");
@@ -212,7 +210,7 @@ mapinfo ()
 
     /* Mapselection */
     if (map.map_selection == 0)
-        sprintf (text, "Selected Map: %s", map.map);
+        snprintf (text, sizeof (text), "Selected Map: %s", map.map);
     else if (map.map_selection == 1)
         sprintf (text, "Random Map");
     else
@@ -299,7 +297,7 @@ mapinfo ()
        font_draw (1 + x, 1 + y, text, 0); */
     y = y + 2 + font[0].size.y;
 
-    SDL_Flip (gfx.screen);
+    gfx_present ();
     keybinput_new (&ki, KEYBI_text, 10);
 
     while (!done && bman.state == GS_wait) {

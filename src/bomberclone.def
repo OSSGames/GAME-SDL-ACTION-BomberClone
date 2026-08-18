@@ -1,0 +1,3 @@
+NAME bomberclone WINDOWAPI
+DESCRIPTION 'BomberClone (SDL2 ArcaOS port)'
+STACKSIZE 524288

@@ -191,8 +191,9 @@ game_keys_loop ()
 
         if (keyb_gamekeys.state[BCK_fullscreen] && !keyb_gamekeys.old[BCK_fullscreen]) {
             /* Switch Fullscreen */
-            SDL_WM_ToggleFullScreen (gfx.screen);
             gfx.fullscreen = !gfx.fullscreen;
+            SDL_SetWindowFullscreen (gfx.window, gfx.fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+            gfx_present ();
             bman.updatestatusbar = 1; // force an update
         }
 
@@ -224,9 +225,10 @@ game_loop ()
     int done = 0,
         eventstate;
 
-    if (GT_MP)
+    if (GT_MP) {
         net_game_fillsockaddr ();
-	if ( SDL_InitSubSystem ( SDL_INIT_JOYSTICK ) < 0 )
+    }
+    if ( SDL_InitSubSystem ( SDL_INIT_JOYSTICK ) < 0 )
         {
                 fprintf ( stderr, "Unable to initialize Joystick: %s\n", SDL_GetError() );
         }
@@ -240,7 +242,7 @@ game_loop ()
     gfx_blitupdaterectclear ();
     draw_logo ();
     draw_field ();
-    SDL_Flip (gfx.screen);
+    gfx_present ();
     draw_players ();
 
     if (bman.p_nr >= 0 && bman.p_nr < MAX_PLAYERS) {
@@ -338,7 +340,7 @@ game_loop ()
     chat_show (-1, -1, -1, -1);
     draw_logo ();
     gfx_blitupdaterectclear ();
-    SDL_Flip (gfx.screen);
+    gfx_present ();
 
     d_gamedetail ("GAME END");
     d_printf ("done = %d\n", done);
@@ -861,7 +863,7 @@ game_showresult ()
 {
     char text[255];
     SDL_Event event;
-    Uint8 *keys;
+    const Uint8 *keys;
     int done = 0,
         keypressed = 0,
         x,
@@ -894,7 +896,7 @@ game_showresult ()
         game_showresultnormal (10, 50, gfx.res.x - 20, gfx.res.y - 100);
 
     gfx_blitdraw ();
-    SDL_Flip (gfx.screen);
+    gfx_present ();
 
     while (!done && bman.state != GS_quit) {
         /* do the keyboard handling */
@@ -906,9 +908,9 @@ game_showresult ()
                 done = 1;
             }
 
-        keys = SDL_GetKeyState (NULL);
+        keys = SDL_GetKeyboardState (NULL);
 
-        if (keys[SDLK_ESCAPE] && event.type == SDL_KEYDOWN) {
+        if (keys[SDL_GetScancodeFromKey(SDLK_ESCAPE)] && event.type == SDL_KEYDOWN) {
             /* we want to quit */
             done = 1;
             bman.p_nr = -1;
@@ -916,16 +918,17 @@ game_showresult ()
             bman.state = GS_startup;
         }
 
-        if ((keys[SDLK_RETURN] || keys[SDLK_LCTRL] || keys[SDLK_RCTRL]) && (!keypressed)
+        if ((keys[SDL_GetScancodeFromKey(SDLK_RETURN)] || keys[SDL_GetScancodeFromKey(SDLK_LCTRL)] || keys[SDL_GetScancodeFromKey(SDLK_RCTRL)]) && (!keypressed)
             && (event.type = SDL_KEYDOWN)) {
             done = 1;
             keypressed = 1;
         }
 
-        if (keys[SDLK_F8] && event.type == SDL_KEYDOWN) {
+        if (keys[SDL_GetScancodeFromKey(SDLK_F8)] && event.type == SDL_KEYDOWN) {
             /* Switch Fullscreen */
-            SDL_WM_ToggleFullScreen (gfx.screen);
             gfx.fullscreen = !gfx.fullscreen;
+            SDL_SetWindowFullscreen (gfx.window, gfx.fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+            gfx_present ();
             bman.updatestatusbar = 1; // force an update
         }
 

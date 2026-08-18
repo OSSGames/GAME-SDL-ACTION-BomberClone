@@ -138,9 +138,9 @@ snd_load (char *tilesetname)
         }
 
         /* try loading the sample from the tileset or the default */
-        sprintf (fullname, "%s/tileset/%s/%s", bman.datapath, tilesetname, filename);
+        snprintf (fullname, sizeof (fullname), "%s/tileset/%s/%s", bman.datapath, tilesetname, filename);
         if ((snd.sample[i] = Mix_LoadWAV (fullname)) == NULL) {
-            sprintf (fullname, "%s/tileset/default/%s", bman.datapath, filename);
+            snprintf (fullname, sizeof (fullname), "%s/tileset/default/%s", bman.datapath, filename);
             if ((snd.sample[i] = Mix_LoadWAV (fullname)) == NULL)
                 d_printf ("Couldn't load %s: %s\n", fullname, SDL_GetError ());
         }
@@ -148,7 +148,7 @@ snd_load (char *tilesetname)
 
 
 	/* random selection of an sound file */	
-	sprintf (fullname, "%s/music", bman.datapath);
+	snprintf (fullname, sizeof (fullname), "%s/music", bman.datapath);
 	desel = destart = s_getdir (fullname);
 	
 	for (max = 0, de = destart; de != NULL; de = de->next) 
@@ -164,7 +164,7 @@ snd_load (char *tilesetname)
 	
     /* try loading the music from the tileset or the default */
 	if (desel != NULL) {
-		sprintf (fullname, "%s/music/%s", bman.datapath, desel->name);
+		snprintf (fullname, sizeof (fullname), "%s/music/%s", bman.datapath, desel->name);
 		if ((snd.music = Mix_LoadMUS (fullname)) == NULL)
         	d_printf ("Couldn't load %s: %s\n", fullname, SDL_GetError ());
 	}

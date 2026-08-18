@@ -104,10 +104,11 @@ void srvlist_rebuildlist () {
 			sprintf (txt2, "%dms", srvlst_dat[i].ping);
 		
 		if (srvlst_dat[i].gamename[0] != 0) /* gamename is present */
-			sprintf (txt1, "%-15s %-5s %5s  %-11s %-4s", srvlst_dat[i].gamename, txt3, txt2, srvlst_dat[i].version, srvlst_dat[i].comment);
+			snprintf (txt1, sizeof (txt1), "%-15s %-5s %5s  %-11s %-4s", srvlst_dat[i].gamename, txt3, txt2, srvlst_dat[i].version, srvlst_dat[i].comment);
 		else {
-			sprintf (txt1, "%s:%s", srvlst_dat[i].host, srvlst_dat[i].port);
-			sprintf (txt1, "%-20s %5s  %-11s %-4s", txt1,txt2, srvlst_dat[i].version, srvlst_dat[i].comment);
+			char tmp_hostport[255];
+			snprintf (tmp_hostport, sizeof (tmp_hostport), "%s:%s", srvlst_dat[i].host, srvlst_dat[i].port);
+			snprintf (txt1, sizeof (txt1), "%-20s %5s  %-11s %-4s", tmp_hostport, txt2, srvlst_dat[i].version, srvlst_dat[i].comment);
 		}
 		strncpy (srvlst_text[i].text, txt1, LEN_CHARENTRY);
 	}
@@ -124,7 +125,6 @@ void net_getserver () {
 	_charlist *sel_entry = &srvlst_text[0];
 	_menu *menu;
 	_menuitem *srvlst_listmenu;
-	_menuitem *srvlst_entry;
     SDL_Event event;
 	
 	d_printf ("net_getserver\n");
@@ -137,7 +137,7 @@ void net_getserver () {
 
 	menu = menu_new ("Join a Game", 500, 400);
 	srvlst_listmenu = menu_create_list (menu, "Host a Game", -1, 50, 475, 250, srvlst_text, &sel_entry, 1);
-	srvlst_entry = menu_create_entry (menu, "IP :", -1, 320, 475, bman.servername, LEN_SERVERNAME+LEN_PORT + 2, MENU_entrytext, 2);	
+	menu_create_entry (menu, "IP :", -1, 320, 475, bman.servername, LEN_SERVERNAME+LEN_PORT + 2, MENU_entrytext, 2);
 	menu_create_button (menu, "OK", -1, 350, 150, 0);
 	menu_focus_id (menu, 1);
 

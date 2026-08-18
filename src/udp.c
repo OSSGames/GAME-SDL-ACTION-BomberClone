@@ -36,7 +36,7 @@ int
 dns_filladdr (char *host, int hostlen, char *port, int portlen, int ai_family,
               struct _sockaddr *sAddr)
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__OS2__)
     struct hostent *he;
     char txt[255];
 
@@ -50,15 +50,15 @@ dns_filladdr (char *host, int hostlen, char *port, int portlen, int ai_family,
     else {
         /* we have to complete the sAddr struct */
 
-        if ((he = gethostbyname (host)) == NULL) { // get the host info
+        if ((he = gethostbyname (host)) == NULL) {
             perror ("dns_filladdr (gethostbyname)");
             return -1;
         }
 
-        ((struct sockaddr_in *) sAddr)->sin_family = ai_family; // host byte order
-        ((struct sockaddr_in *) sAddr)->sin_port = htons (atoi (port)); // short, network byte order
+        ((struct sockaddr_in *) sAddr)->sin_family = ai_family;
+        ((struct sockaddr_in *) sAddr)->sin_port = htons (atoi (port));
         ((struct sockaddr_in *) sAddr)->sin_addr = *((struct in_addr *) he->h_addr);
-        memset (&(((struct sockaddr_in *) sAddr)->sin_zero), '\0', 8); // zero the rest of the struct
+        memset (&(((struct sockaddr_in *) sAddr)->sin_zero), '\0', 8);
     }
 
 #else
@@ -120,7 +120,7 @@ udp_send (int sock, char *text, int len, struct _sockaddr *sAddr, int ai_family)
 {
     int addrlen = sizeof (struct sockaddr_in);
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__OS2__)
     if (ai_family == PF_INET)
         addrlen = sizeof (struct sockaddr_in);
     else
@@ -147,21 +147,21 @@ void udp_sendbroadcast (int sock, char *text, int len, struct _sockaddr *sAddr, 
 int
 udp_server (char *port, int ai_family)
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__OS2__)
 
     int sock;
-    struct sockaddr_in sAddr;   // my address information
+    struct sockaddr_in sAddr;
 
     if ((sock = socket (ai_family, SOCK_DGRAM, 0)) == -1) {
         perror ("udp_server: socket");
         return -1;
     }
 
-    sAddr.sin_family = AF_INET; // host byte order
-    sAddr.sin_port = htons (atoi (port)); // short, network byte order
-    sAddr.sin_addr.s_addr = INADDR_ANY; // automatically fill with my IP
+    sAddr.sin_family = AF_INET;
+    sAddr.sin_port = htons (atoi (port));
+    sAddr.sin_addr.s_addr = INADDR_ANY;
 
-    memset (&(sAddr.sin_zero), '\0', 8); // zero the rest of the struct
+    memset (&(sAddr.sin_zero), '\0', 8);
 
     if (bind (sock, (struct sockaddr *) &sAddr, sizeof (struct sockaddr)) == -1) {
         perror ("udp_server: bind");
@@ -249,7 +249,7 @@ udp_get (int sock, char *text, int len, struct _sockaddr *sAddr, int ai_family)
     /* what version of tcp/ip we're using */
     if (ai_family == AF_INET)
         clen = sizeof (struct sockaddr_in);
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__OS2__)
     else
         clen = sizeof (struct sockaddr_in6);
 #endif
@@ -283,7 +283,7 @@ dns_net_getip (char *host)
 	hAddr = gethostbyname (host);
     if (hAddr == NULL)
         return NULL;
-    strncpy (dnsip, inet_ntoa (*((struct in_addr *) hAddr->h_addr)), UDP_LEN_HOSTNAME);
+    snprintf (dnsip, UDP_LEN_HOSTNAME, "%s", inet_ntoa (*((struct in_addr *) hAddr->h_addr)));
 
 	return dnsip;
 };

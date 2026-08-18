@@ -224,7 +224,7 @@ scale_image (SDL_Surface *orginal, int newx, int newy)
     amask = 0xff000000;
 #endif /*  */
 
-    surface = SDL_CreateRGBSurface (SDL_HWSURFACE, newx, newy, 32, rmask, gmask, bmask, amask);
+    surface = SDL_CreateRGBSurface (0, newx, newy, 32, rmask, gmask, bmask, amask);
     if (surface == NULL) {
         fprintf (stderr, "CreateRGBSurface failed: %s\n", SDL_GetError ());
         return NULL;
@@ -285,10 +285,6 @@ scale_image (SDL_Surface *orginal, int newx, int newy)
 SDL_Surface *
 makegray_image (SDL_Surface * org)
 {
-    Uint32 rmask,
-      gmask,
-      bmask,
-      amask;
     Uint32 pixel,
       transpixel = 0;
     SDL_Surface *dest;
@@ -299,18 +295,6 @@ makegray_image (SDL_Surface * org)
       g,
       b,
       gray;
-
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    rmask = 0xff000000;
-    gmask = 0x00ff0000;
-    bmask = 0x0000ff00;
-    amask = 0x000000ff;
-#else /*  */
-    rmask = 0x000000ff;
-    gmask = 0x0000ff00;
-    bmask = 0x00ff0000;
-    amask = 0xff000000;
-#endif /*  */
 
 	dest = SDL_CreateRGBSurface (SDL_SWSURFACE, org->w, org->h, org->format->BitsPerPixel,
                                  org->format->Rmask, org->format->Gmask,
@@ -326,7 +310,7 @@ makegray_image (SDL_Surface * org)
             fprintf (stderr, "Can't lock screen: %s\n", SDL_GetError ());
             return NULL;
         }
-    if (SDL_MUSTLOCK (org))
+    if (SDL_MUSTLOCK (org)) {
         if (SDL_LockSurface (org) < 0) {
             fprintf (stderr, "Can't lock screen: %s\n", SDL_GetError ());
             if (SDL_MUSTLOCK (dest)) {
@@ -334,8 +318,8 @@ makegray_image (SDL_Surface * org)
             }
             return NULL;
         }
-
-	switch (bpp) {
+    }
+    switch (bpp) {
 		case (2):
 			for (x = 0; x < org->w; x++)
 				for (y = 0; y < org->h; y++) {
@@ -390,7 +374,7 @@ makegray_image (SDL_Surface * org)
     if (SDL_MUSTLOCK (dest)) {
         SDL_UnlockSurface (dest);
     }
-    SDL_SetColorKey (dest, SDL_SRCCOLORKEY, transpixel);
+    SDL_SetColorKey (dest, SDL_TRUE, transpixel);
     return dest;
 };
 
@@ -402,7 +386,7 @@ gfx_quater_image (SDL_Surface * org1, SDL_Surface * org2, SDL_Surface * org3, SD
     int y,
       x;
 
-    dest = SDL_CreateRGBSurface (SDL_HWSURFACE, org1->w, org1->h, org1->format->BitsPerPixel,
+    dest = SDL_CreateRGBSurface (0, org1->w, org1->h, org1->format->BitsPerPixel,
                                  org1->format->Rmask, org1->format->Gmask,
                                  org1->format->Bmask, org1->format->Amask);
     if (dest == NULL) {
@@ -504,7 +488,7 @@ SDL_Surface *gfx_copyfrom (SDL_Surface *img, SDL_Rect *rect) {
 		src = *rect;
 	
     res =
-        SDL_CreateRGBSurface (SDL_HWSURFACE, src.w, src.h, img->format->BitsPerPixel,
+        SDL_CreateRGBSurface (0, src.w, src.h, img->format->BitsPerPixel,
                               img->format->Rmask, img->format->Gmask,
                               img->format->Bmask, img->format->Amask);
 	
