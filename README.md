@@ -47,7 +47,26 @@ Game data must be located in the `data/` subdirectory next to the executable.
 | Alt+Enter   | Toggle fullscreen             |
 | Ctrl+X      | Quit                          |
 
-## Known Issues / Network Notes
+## Known Issues
+
+### Music does not play
+
+The ArcaOS SDL2\_mixer package currently ships with only the `CMD` and `WAVE`
+decoders.  BomberClone's music files (`data/music/`) are in XM and MOD tracker
+format, which require the XMP, MIKMOD, or MODPLUG decoder — none of which are
+included.  As a result, background music is silent.
+
+**Workaround:** convert the XM/MOD files to WAV using
+[OpenMPT](https://openmpt.org/) (free, cross-platform):
+
+1. Open each file in OpenMPT.
+2. File → Export → Wave (22 050 Hz, 16-bit, stereo).
+3. Replace the originals in `data/music/` with the exported `.wav` files.
+
+The game will then play them through the WAVE decoder.  Sound effects are
+unaffected; they are already in WAV format.
+
+### Network
 
 - Starting a LAN network game requires the **Notify Gamemaster** option to be
   disabled.
